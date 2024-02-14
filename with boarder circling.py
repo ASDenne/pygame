@@ -49,7 +49,7 @@ def game_loop():
     food_y = round(random.randrange(20,720 - 20)/20)*20
 
     while not quit_game:
-
+        screen = pygame.display.set_mode((1000,720))
         while game_over:
             screen.fill(white)
             message("you died! press 'Q' to quit or 'A' to play Again",
@@ -65,6 +65,7 @@ def game_loop():
                         game_loop()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                screen = pygame.display.set_mode((1000,720))
                 instructions = "Exit: X to quit, SPACE to resume, R to reset"
                 message(instructions,white,black)
                 pygame.display.update()
@@ -85,20 +86,33 @@ def game_loop():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    snake_y_change = 0
-                    snake_x_change = -20
-                elif event.key == pygame.K_RIGHT:
-                    snake_y_change = 0
+                    snake_y_change += 0
+                    snake_x_change += -20
+                if event.key == pygame.K_RIGHT:
+                    snake_y_change += 0
+                    snake_x_change += 20
+                if event.key == pygame.K_UP:
+                    snake_y_change += -20
+                    snake_x_change += 0
+                if event.key == pygame.K_DOWN:
+                    snake_y_change += 20
+                    snake_x_change += 0
+                if snake_x_change > 20:
                     snake_x_change = 20
-                elif event.key == pygame.K_UP:
-                    snake_y_change = -20
-                    snake_x_change = 0
-                elif event.key == pygame.K_DOWN:
+                if snake_y_change > 20:
                     snake_y_change = 20
-                    snake_x_change = 0
-
-        if snake_x >= size_x or snake_x < 0 or snake_y >= size_y or snake_y < 0:
-            game_over = True
+                if snake_x_change < -20:
+                    snake_x_change = -20
+                if snake_y_change < -20:
+                    snake_y_change = -20
+        if snake_x >= size_x:
+            snake_x = 10
+        if snake_y >= size_y:
+            snake_y = 10
+        if snake_x < 0:
+            snake_x = size_x-10
+        if snake_y < 0:
+            snake_y = size_y-10
 
         snake_x += snake_x_change
         snake_y += snake_y_change

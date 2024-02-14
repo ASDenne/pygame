@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 def draw_snake(snake_list,colour):
     #print(f"snake list:{snake_list}")
     for i in snake_list:
-        pygame.draw.rect(screen,colour,[i[0],i[1],20, 20])
+        pygame.draw.rect(screen,colour,[i[0],i[1],10, 10])
 
 def message(msg,txt_colour,bkgd_colour):
     txt = msg_font.render(msg,True,txt_colour,bkgd_colour)
@@ -36,8 +36,8 @@ def game_loop():
     size_x = 1000
     size_y = 720
     screen = pygame.display.set_mode((size_x,size_y))
-    snake_x = size_x/2-10
-    snake_y = size_y/2-10
+    snake_x = size_x/2-5
+    snake_y = size_y/2-5
     snake_list = []
     snake_length = 1
     speed = 5
@@ -45,11 +45,11 @@ def game_loop():
     snake_x_change = 0
     snake_y_change = 0
 
-    food_x = round(random.randrange(20,1000 - 20)/20)*20
-    food_y = round(random.randrange(20,720 - 20)/20)*20
+    food_x = round(random.randrange(10,1000 - 10)/10)*10
+    food_y = round(random.randrange(10,720 - 10)/10)*10
 
     while not quit_game:
-
+        screen = pygame.display.set_mode((1000,720))
         while game_over:
             screen.fill(white)
             message("you died! press 'Q' to quit or 'A' to play Again",
@@ -65,6 +65,7 @@ def game_loop():
                         game_loop()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                screen = pygame.display.set_mode((1000,720))
                 instructions = "Exit: X to quit, SPACE to resume, R to reset"
                 message(instructions,white,black)
                 pygame.display.update()
@@ -85,20 +86,33 @@ def game_loop():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    snake_y_change = 0
-                    snake_x_change = -20
-                elif event.key == pygame.K_RIGHT:
-                    snake_y_change = 0
-                    snake_x_change = 20
-                elif event.key == pygame.K_UP:
-                    snake_y_change = -20
-                    snake_x_change = 0
-                elif event.key == pygame.K_DOWN:
-                    snake_y_change = 20
-                    snake_x_change = 0
-
-        if snake_x >= size_x or snake_x < 0 or snake_y >= size_y or snake_y < 0:
-            game_over = True
+                    snake_y_change += 0
+                    snake_x_change += -10
+                if event.key == pygame.K_RIGHT:
+                    snake_y_change += 0
+                    snake_x_change += 10
+                if event.key == pygame.K_UP:
+                    snake_y_change += -10
+                    snake_x_change += 0
+                if event.key == pygame.K_DOWN:
+                    snake_y_change += 10
+                    snake_x_change += 0
+                if snake_x_change > 10:
+                    snake_x_change = 10
+                if snake_y_change > 10:
+                    snake_y_change = 10
+                if snake_x_change < -10:
+                    snake_x_change = -10
+                if snake_y_change < -10:
+                    snake_y_change = -10
+        if snake_x >= size_x:
+            snake_x = 5
+        if snake_y >= size_y:
+            snake_y = 5
+        if snake_x < 0:
+            snake_x = size_x-5
+        if snake_y < 0:
+            snake_y = size_y-5
 
         snake_x += snake_x_change
         snake_y += snake_y_change
@@ -117,15 +131,15 @@ def game_loop():
         pygame.display.update()
 
 
-        pygame.draw.circle(screen,yellow,[food_x,food_y],10)
+        pygame.draw.circle(screen,yellow,[food_x,food_y],5)
         pygame.display.update()
 
-        if snake_x == food_x -10 and snake_y == food_y - 10:
-            food_x = round(random.randrange(20,size_x - 40)/20)*20
-            food_y = round(random.randrange(20,size_y - 40)/20)*20
+        if snake_x == food_x -5 and snake_y == food_y - 5:
+            food_x = round(random.randrange(10,size_x - 20)/10)*10
+            food_y = round(random.randrange(10,size_y - 20)/10)*10
             snake_length += 1
-            size_y = size_y-20
-            size_x = size_x-20
+            size_y = size_y-10
+            size_x = size_x-10
             speed += -0.1
             screen = pygame.display.set_mode((size_x,size_y))
 
