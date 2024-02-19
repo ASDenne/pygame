@@ -7,34 +7,68 @@ screen = pygame.display.set_mode((1000,740))
 game_icon = pygame.image.load('snake_icon.png')
 pygame.display.set_icon(game_icon)
 pygame.display.set_caption("snake game - by andrew denne")
-
+#colours
 black = (0, 0, 0)
 white = (255,255,255)
 red = (255,0,0)
 green = (148, 227, 159)
 yellow = (255,255,0)
 blue = (0,0,255)
+
 score_font = pygame.font.SysFont("arialblack",20)
 exit_font = pygame.font.Font("freesansbold.ttf",30)
 msg_font = pygame.font.SysFont("arialblack",20)
 clock = pygame.time.Clock()
 
-def player_score(score,score_colour):
-    display_store = score_font.render(f"score: {score}",True,score_colour)
-    screen.blit(display_store,(10,10))
+def update_high_score(score,high_score):
+    #print(score)
+    #print(high_score)
+    if int(score)>int(high_score):
+        return score
+    else:
+        return high_score
+
+def load_high_score():
+    #getting hi scroe from file
+    try:
+        hi_score_file = open("HI_score.txt",'r')
+    except IOError:
+        hi_score_file = open("HI_score.txt",'w')
+        hi_score_file.write("0")
+    hi_score_file =open("HI_score.txt",'r')
+    value = hi_score_file.read()
+    hi_score_file.close()
+    return value
+
+def save_high_score(high_score):
+    #saving high scores
+    high_score_file = open("HI_score.txt",'w')
+    high_score_file.write(str(high_score))
+    high_score_file.close()
+
+def player_score(score,score_colour,hi_score):
+    #deslpaying scores
+    display_score = score_font.render(f"score: {score}",True,score_colour)
+    screen.blit(display_score,(10,10))
+    display_score = score_font.render(f"high score: {hi_score}",True,score_colour)
+    screen.blit(display_score,(10,30))
 
 def draw_snake(snake_list,colour):
+    #drawing each square in a snake
     #print(f"snake list:{snake_list}")
     for i in snake_list:
         pygame.draw.rect(screen,colour,[i[0],i[1],10, 10])
 
 def message(msg,txt_colour,bkgd_colour,x,y):
+    #sending a pause or end of game message
     txt = msg_font.render(msg,True,txt_colour,bkgd_colour)
 
     text_box = txt.get_rect(center=(x,y))
     screen.blit(txt,text_box)
 
 def game_loop():
+    #the game
+    #stats
     quit_game = False
     game_over = False
     size_x = 1000
@@ -46,6 +80,7 @@ def game_loop():
     snake_length = 1
     speed = 5
     temp_speed = speed
+    score = 0
 
     snake_x_change = 0
     snake_y_change = 0
@@ -53,15 +88,19 @@ def game_loop():
     food_x = round(random.randrange(10,1000 - 10)/10)*10
     food_y = round(random.randrange(10,720 - 10)/10)*10
 
+    high_score = load_high_score()
+    print(f"high_score test: {high_score}")
+
     while not quit_game:
         #screen = pygame.display.set_mode((1000,720))
         while game_over:
+            save_high_score(high_score)
             #screen = pygame.display.set_mode((1000,720))
             screen.fill(white)
             message("you died! press 'Q' to quit or 'A' to play Again",
                     black, white,size_x/2,size_y/2)
             pygame.display.update()
-
+#see what the directions are
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
@@ -142,7 +181,8 @@ def game_loop():
         draw_snake([snake_head],blue)
         #pygame.display.update()
         score = snake_length -1
-        player_score(score,black)
+        high_score = update_high_score(score,high_score)
+        player_score(score,black,high_score)
 
         #pygame.draw.circle(screen,yellow,[food_x,food_y],5)
         food =pygame.Rect(food_x-5,food_y-5,10,10)
