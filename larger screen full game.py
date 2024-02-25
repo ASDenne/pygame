@@ -26,7 +26,7 @@ fruit_plain = green
 fruit_time = yellow
 fruit_space = cyan
 #feature locked or require certain things for when not testing while be behind a if testing
-testing = True
+testing = False
 score_font = pygame.font.SysFont("arialblack",20)
 exit_font = pygame.font.Font("freesansbold.ttf",30)
 msg_font = pygame.font.SysFont("arialblack",20)
@@ -112,14 +112,14 @@ def game_loop():
         food_x.append(round(random.randrange(10,1000 - 10)/10)*10)
         food_y.append(round(random.randrange(10,720 - 10)/10)*10)
         food_type.append(random.choices(["normal","space","time"],[5,1,1]))
-        print(food_type)
+        #print(food_type)
 
     high_score = load_high_score()
     #print(f"high_score test: {high_score}")
     screensizeupdate = True
     while not quit_game:
-        print(space)
-        print(time)
+        #print(space)
+        #print(time)
         #screen = pygame.display.set_mode((1000,720))
         while game_over:
             save_high_score(high_score)
@@ -190,6 +190,25 @@ def game_loop():
                         snake_x_change = -10
                     if snake_y_change < -10:
                         snake_y_change = -10
+        if time_time <= 0 and time:
+            time = False
+            temp_speed = speed
+        if space_time <= 0 and space:
+            space = False
+            if snake_x_change > 10:
+                snake_x_change = 10
+            if snake_y_change > 10:
+                snake_y_change = 10
+            if snake_x_change < -10:
+                snake_x_change = -10
+            if snake_y_change < -10:
+                snake_y_change = -10
+        if time_time > 0:
+            time_time -= 1
+        if space_time > 0:
+            space_time -= 1
+        #print(space_time,time_time)
+
         #setting up screen wrapping so that snake reaches other side
         if snake_x >= size_x:
             snake_x = -5
@@ -246,11 +265,12 @@ def game_loop():
                 screensizeupdate = True
                 speed += 0.1
                 if food_type[i-1] == ["space"]:
-                    space_time += 30
+                    space_time += 6*speed
                     space = True
                 elif food_type[i-1] == ["time"]:
-                    time_time += 30
+                    time_time += 6*speed
                     time = True
+                food_type[i-1] = random.choices(["normal","space","time"],[5,1,1])
                 #screen = pygame.display.set_mode((size_x,size_y))
                 #screen.fill(green)
             if size_x < food_x[i-1]-5 or size_y < food_y[i-1]-5 :
@@ -269,5 +289,12 @@ def game_loop():
 
     pygame.quit()
     quit()
+
+#explination of game features
+print("directions operate as digianals so left arrow starts it moving left or if moving right stops it moving right\n"
+      "the same is true for the up down and right keys\n"
+      "the fruit with a cyan ring is a space fruit which allows your snake to jump squares for a little while\n"
+      "the fruit with a yellow ring is a time fruit and allows your snake to speed up by pressing 'W' and slow down by pressing 'S' for a little while\n"
+      "the border shrinks as you gather fruit")
 #starting loop
 game_loop()
